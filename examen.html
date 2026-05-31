@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen Multiple Choice</title>
+<style>
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .container {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 680px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #21262d;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #58a6ff, #bc8cff);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .counter {
+    text-align: right;
+    font-size: 0.82rem;
+    color: #8b949e;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Unit Banner */
+  .unit-banner {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 12px;
+    border: 2px dashed;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .unit-banner.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  .unit-banner .unit-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .unit-banner .unit-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .unit-banner .unit-desc {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .btn-start-unit {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-start-unit:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-start-unit:active {
+    transform: translateY(0);
+  }
+
+  /* Question area */
+  .question-area {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .question-area.fade-out {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .question-area.fade-in {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .question-text {
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 1.1rem;
+    color: #f0f6fc;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .option {
+    background: #21262d;
+    border: 2px solid #30363d;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.93rem;
+    line-height: 1.4;
+    color: #c9d1d9;
+    user-select: none;
+  }
+
+  .option:hover:not(.disabled) {
+    background: #30363d;
+    border-color: #58a6ff;
+  }
+
+  .option.correct {
+    border-color: #3fb950;
+    background: #1b3624;
+    color: #7ee787;
+  }
+
+  .option.incorrect {
+    border-color: #f85149;
+    background: #3d1f1e;
+    color: #ff7b72;
+  }
+
+  .option.reveal-correct {
+    border-color: #3fb950;
+    background: #1b3624;
+    color: #7ee787;
+  }
+
+  .option.disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .feedback {
+    margin-top: 0.9rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: block;
+    background: #1b3624;
+    color: #7ee787;
+    border: 1px solid #3fb950;
+  }
+
+  .feedback.incorrect {
+    display: block;
+    background: #3d1f1e;
+    color: #ff7b72;
+    border: 1px solid #f85149;
+  }
+
+  .btn-next {
+    margin-top: 1.1rem;
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+    display: none;
+  }
+
+  .btn-next:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-next:active {
+    transform: translateY(0);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Final screen */
+  .final-screen {
+    display: none;
+    text-align: center;
+  }
+
+  .final-screen.active {
+    display: block;
+  }
+
+  .final-score {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0.3rem 0;
+  }
+
+  .final-percent {
+    font-size: 1.1rem;
+    color: #8b949e;
+    margin-bottom: 0.3rem;
+  }
+
+  .unit-breakdown {
+    margin: 1rem 0 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .unit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .unit-row .unit-label {
+    font-weight: 600;
+  }
+
+  .unit-row .unit-score {
+    font-weight: 600;
+  }
+
+  .final-message {
+    font-size: 1.05rem;
+    margin: 0.5rem 0 1.3rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+  }
+
+  .final-message.excellent {
+    background: #1b3624;
+    color: #7ee787;
+    border: 1px solid #3fb950;
+  }
+
+  .final-message.good {
+    background: #1c2a41;
+    color: #79c0ff;
+    border: 1px solid #58a6ff;
+  }
+
+  .final-message.average {
+    background: #3d2e1e;
+    color: #d29922;
+    border: 1px solid #bb8009;
+  }
+
+  .final-message.bad {
+    background: #3d1f1e;
+    color: #ff7b72;
+    border: 1px solid #f85149;
+  }
+
+  .btn-restart {
+    padding: 0.8rem 2.5rem;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-restart:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-feedback {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #bc8cff;
+    border-radius: 10px;
+    color: #bc8cff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .btn-feedback:hover {
+    background: rgba(188, 140, 255, 0.1);
+    border-color: #58a6ff;
+    color: #58a6ff;
+  }
+
+  .btn-feedback:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    color: #8b949e;
+    font-size: 0.9rem;
+  }
+
+  .spinner.active {
+    display: flex;
+  }
+
+  .spinner-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    animation: spin-bounce 1s ease-in-out infinite;
+  }
+
+  .spinner-dot:nth-child(2) { animation-delay: 0.15s; }
+  .spinner-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes spin-bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .feedback-ia-container {
+    display: none;
+    margin-top: 1.2rem;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    background: #161b22;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    text-align: left;
+  }
+
+  .feedback-ia-container.active {
+    display: block;
+  }
+
+  .feedback-ia-container::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    z-index: -1;
+  }
+
+  .feedback-ia-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    color: #f0f6fc;
+  }
+
+  .feedback-ia-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #c9d1d9;
+    white-space: pre-wrap;
+  }
+
+  .feedback-ia-text .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #58a6ff;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .feedback-ia-error {
+    margin-top: 0.8rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    background: #3d1f1e;
+    color: #ff7b72;
+    border: 1px solid #f85149;
+    font-size: 0.85rem;
+    display: none;
+  }
+
+  .feedback-ia-error.active {
+    display: block;
+  }
+
+  /* AI Explanation per question */
+  .explicacion-box {
+    margin-top: 0.9rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    background: #1c2128;
+    border-left: 4px solid #d29922;
+    animation: slideUp 0.35s ease;
+    display: none;
+  }
+
+  .explicacion-box.active {
+    display: block;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .explicacion-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #d29922;
+    margin-bottom: 0.4rem;
+  }
+
+  .explicacion-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #c9d1d9;
+    white-space: pre-wrap;
+  }
+
+  .explicacion-text .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #d29922;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  .explicacion-error {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: #f85149;
+    display: none;
+  }
+
+  .explicacion-error.active {
+    display: block;
+  }
+
+  /* Skeleton loader */
+  .skeleton-line {
+    height: 12px;
+    border-radius: 4px;
+    background: #30363d;
+    margin-bottom: 8px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  .skeleton-line:last-child {
+    width: 65%;
+  }
+
+  .skeleton-line:nth-child(2) {
+    width: 85%;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50%      { opacity: 0.7; }
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 1.25rem; }
+    .question-text { font-size: 1.05rem; }
+    .option { font-size: 0.88rem; padding: 0.7rem; }
+    .final-score { font-size: 2.5rem; }
+    .unit-banner { padding: 1.5rem 0.8rem; }
+    .unit-banner .unit-title { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+  <div class="progress-bar">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="counter" id="counter"></div>
+
+  <div id="unitBanner"></div>
+
+  <div id="questionArea" class="question-area hidden">
+    <div class="question-text" id="questionText"></div>
+    <div class="options" id="optionsContainer"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="explicacion-box" id="explicacionBox">
+      <div class="explicacion-title">💡 ¿Por qué estaba mal?</div>
+      <div class="explicacion-text" id="explicacionText"></div>
+      <div class="explicacion-error" id="explicacionError"></div>
+    </div>
+    <button class="btn-next" id="btnNext">Siguiente →</button>
+  </div>
+
+  <div class="final-screen" id="finalScreen">
+    <div style="font-size:1.4rem;font-weight:600;color:#f0f6fc;margin-bottom:0.25rem;">Resultado</div>
+    <div class="final-score" id="finalScore">0</div>
+    <div class="final-percent" id="finalPercent"></div>
+    <div class="unit-breakdown" id="unitBreakdown"></div>
+    <div class="final-message" id="finalMessage"></div>
+    <button class="btn-restart" id="btnRestart">Reintentar</button>
+    <button class="btn-feedback" id="btnFeedback">🤖 Obtener feedback con IA</button>
+    <div class="spinner" id="spinner">
+      <div class="spinner-dot"></div>
+      <div class="spinner-dot"></div>
+      <div class="spinner-dot"></div>
+      <span>Procesando feedback...</span>
+    </div>
+    <div class="feedback-ia-container" id="feedbackIaContainer">
+      <div class="feedback-ia-title">🤖 Feedback IA</div>
+      <div class="feedback-ia-text" id="feedbackIaText"></div>
+    </div>
+    <div class="feedback-ia-error" id="feedbackIaError"></div>
+  </div>
+</div>
+
+<script>
+  const UNITS = [
+    {
+      title: "Unidad 1 — Entorno del Programador + HTML/CSS",
+      icon: "🖥️",
+      color: "#58a6ff",
+      bg: "#1c2a41",
+      btnBg: "linear-gradient(135deg, #58a6ff, #79c0ff)",
+      questions: [
+        {
+          question: "¿Qué es un Sistema Operativo?",
+          options: [
+            "a) Un lenguaje de programación",
+            "b) Software intermediario entre hardware y software",
+            "c) Un navegador web",
+            "d) Un editor de código"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Qué hace el comando mkdir?",
+          options: [
+            "a) Elimina una carpeta",
+            "b) Lista archivos",
+            "c) Crea una carpeta nueva",
+            "d) Cambia de directorio"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Qué es un IDE?",
+          options: [
+            "a) Un protocolo de red",
+            "b) Un sistema de versiones",
+            "c) Un entorno que reúne herramientas para programar",
+            "d) Un tipo de base de datos"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Qué hace git push?",
+          options: [
+            "a) Guarda cambios en el historial local",
+            "b) Prepara archivos para el commit",
+            "c) Sube los commits al repositorio remoto",
+            "d) Descarga cambios del repositorio"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Cuál es la diferencia principal entre Scrum y Kanban?",
+          options: [
+            "a) Scrum usa tableros, Kanban usa sprints",
+            "b) Scrum es más estructurado con sprints y roles; Kanban es más flexible y visual",
+            "c) Son exactamente iguales",
+            "d) Kanban tiene roles fijos, Scrum no"
+          ],
+          correct: 1
+        },
+        {
+          question: '¿Para qué sirve la etiqueta <nav>?',
+          options: [
+            "a) Mostrar imágenes",
+            "b) Definir el pie de página",
+            "c) Representar el menú de navegación",
+            "d) Crear una sección lateral"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Para qué tipo de layout es ideal CSS Grid?",
+          options: [
+            "a) Alinear elementos en una sola fila",
+            "b) Layouts bidimensionales (filas y columnas)",
+            "c) Animaciones",
+            "d) Tipografía"
+          ],
+          correct: 1
+        }
+      ]
+    },
+    {
+      title: "Unidad 2 — CSS Avanzado, JavaScript ES6+ y Servidor Web",
+      icon: "⚡",
+      color: "#d29922",
+      bg: "#2d2416",
+      btnBg: "linear-gradient(135deg, #d29922, #e3b341)",
+      questions: [
+        {
+          question: "¿Qué significa Mobile-First?",
+          options: [
+            "a) Diseñar primero para desktop y luego adaptar a móvil",
+            "b) Diseñar solo para celulares",
+            "c) Diseñar primero para móvil y luego escalar a pantallas más grandes",
+            "d) Usar solo flexbox"
+          ],
+          correct: 2
+        },
+        {
+          question: 'En el modelo cliente-servidor, ¿qué es un "request"?',
+          options: [
+            "a) La respuesta del servidor",
+            "b) El mensaje que el cliente envía al servidor pidiendo algo",
+            "c) El código HTML de la página",
+            "d) El servidor en sí"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Para qué se usa el método HTTP POST?",
+          options: [
+            "a) Leer datos",
+            "b) Eliminar un recurso",
+            "c) Crear un nuevo recurso",
+            "d) Reemplazar un recurso completo"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Qué significa el código de estado HTTP 404?",
+          options: [
+            "a) Todo salió bien",
+            "b) Error interno del servidor",
+            "c) No autorizado",
+            "d) El recurso no fue encontrado"
+          ],
+          correct: 3
+        },
+        {
+          question: "¿Qué es la Fetch API?",
+          options: [
+            "a) Un framework de JavaScript",
+            "b) Una función nativa de JS para hacer peticiones HTTP",
+            "c) Un método de CSS",
+            "d) Una librería externa"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Cuándo conviene usar const en lugar de let?",
+          options: [
+            "a) Cuando el valor va a cambiar",
+            "b) Siempre que sea posible, cuando el valor no debe cambiar",
+            "c) Solo dentro de funciones",
+            "d) Nunca, es mejor usar var"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Qué devuelve el método filter() en un array?",
+          options: [
+            "a) Un solo elemento",
+            "b) El mismo array modificado",
+            "c) Un nuevo array con los elementos que cumplen una condición",
+            "d) El índice del elemento buscado"
+          ],
+          correct: 2
+        },
+        {
+          question: "¿Qué es el DOM?",
+          options: [
+            "a) Un lenguaje de programación",
+            "b) La representación en memoria del HTML que JavaScript puede manipular",
+            "c) Un método de CSS",
+            "d) Un protocolo de red"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Para qué se usan async y await?",
+          options: [
+            "a) Para declarar variables",
+            "b) Para manejar código asíncrono de forma más legible, esperando la resolución de una Promise",
+            "c) Para crear componentes",
+            "d) Para aplicar estilos dinámicos"
+          ],
+          correct: 1
+        }
+      ]
+    },
+    {
+      title: "Unidad 3 — React.js y Frontend Profesional",
+      icon: "⚛️",
+      color: "#3fb950",
+      bg: "#1b3624",
+      btnBg: "linear-gradient(135deg, #3fb950, #56d364)",
+      questions: [
+        {
+          question: "¿Qué es un componente en React?",
+          options: [
+            "a) Una hoja de estilos",
+            "b) Una función que devuelve JSX y representa una pieza reutilizable de interfaz",
+            "c) Un método del DOM",
+            "d) Un tipo de petición HTTP"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Por qué las props en React son de solo lectura?",
+          options: [
+            "a) Por una limitación técnica del navegador",
+            "b) Porque React sigue un flujo de datos unidireccional y el hijo no debe modificar lo que recibe",
+            "c) Porque son strings",
+            "d) No son de solo lectura, se pueden modificar"
+          ],
+          correct: 1
+        },
+        {
+          question: "¿Qué pasa cuando se llama al setter de useState?",
+          options: [
+            "a) Nada visible",
+            "b) Se modifica el estado directamente",
+            "c) React actualiza el estado y vuelve a renderizar el componente",
+            "d) Se reinicia toda la aplicación"
+          ],
+          correct: 2
+        },
+        {
+          question: '¿Qué pasa si el array de dependencias de useEffect se deja vacío []?',
+          options: [
+            "a) El efecto se ejecuta en cada renderizado",
+            "b) El efecto nunca se ejecuta",
+            "c) El efecto se ejecuta solo una vez, cuando el componente se monta",
+            "d) Genera un error"
+          ],
+          correct: 2
+        }
+      ]
+    }
+  ];
+
+  const TOTAL_QUESTIONS = UNITS.reduce((sum, u) => sum + u.questions.length, 0);
+
+  const unitBanner = document.getElementById('unitBanner');
+  const questionArea = document.getElementById('questionArea');
+  const questionText = document.getElementById('questionText');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const feedback = document.getElementById('feedback');
+  const btnNext = document.getElementById('btnNext');
+  const btnRestart = document.getElementById('btnRestart');
+  const progressFill = document.getElementById('progressFill');
+  const counter = document.getElementById('counter');
+  const finalScreen = document.getElementById('finalScreen');
+  const finalScore = document.getElementById('finalScore');
+  const finalPercent = document.getElementById('finalPercent');
+  const finalMessage = document.getElementById('finalMessage');
+  const unitBreakdown = document.getElementById('unitBreakdown');
+
+  let currentUnit = 0;
+  let currentQ = 0;
+  let answered = false;
+  let score = 0;
+  let unitScores = [0, 0, 0];
+  let totalAnswered = 0;
+  let preguntasIncorrectas = [];
+  let explicacionesCache = {};
+  let currentExplicacionAbort = null;
+
+  function updateProgress() {
+    const pct = (totalAnswered / TOTAL_QUESTIONS) * 100;
+    progressFill.style.width = `${pct}%`;
+  }
+
+  function updateCounter() {
+    const u = UNITS[currentUnit];
+    counter.textContent = `U${currentUnit + 1} · ${currentQ + 1}/${u.questions.length}  ·  Global: ${totalAnswered}/${TOTAL_QUESTIONS}`;
+  }
+
+  function showUnitBanner() {
+    questionArea.classList.add('hidden');
+    finalScreen.classList.remove('active');
+    unitBanner.classList.remove('hidden');
+
+    const u = UNITS[currentUnit];
+    const localQ = currentQ;
+    const totalQ = u.questions.length;
+
+    let descText = '';
+    if (currentUnit === 0) descText = 'Conceptos fundamentales sobre sistemas operativos, comandos de terminal, herramientas de desarrollo, control de versiones, metodologías ágiles y maquetado web con HTML y CSS.';
+    else if (currentUnit === 1) descText = 'Diseño responsive avanzado, arquitectura cliente-servidor, protocolo HTTP, Fetch API, y fundamentos de JavaScript moderno (ES6+).';
+    else descText = 'Componentes, props, estado (useState) y efectos secundarios (useEffect) en React.';
+
+    unitBanner.innerHTML = `
+      <div class="unit-banner" style="border-color:${u.color};background:${u.bg};">
+        <div class="unit-icon">${u.icon}</div>
+        <div class="unit-title" style="color:${u.color};">${u.title}</div>
+        <div class="unit-desc">${descText}<br><span style="font-weight:600;margin-top:0.4rem;display:inline-block;">${totalQ} preguntas</span></div>
+        <button class="btn-start-unit" style="background:${u.btnBg};" id="btnStartUnit">Comenzar unidad</button>
+      </div>
+    `;
+
+    document.getElementById('btnStartUnit').addEventListener('click', () => {
+      unitBanner.querySelector('.unit-banner').classList.add('fade-out');
+      setTimeout(() => {
+        unitBanner.classList.add('hidden');
+        showQuestion();
+      }, 250);
+    });
+
+    updateProgress();
+    counter.textContent = `U${currentUnit + 1} · 0/${totalQ}  ·  Global: ${totalAnswered}/${TOTAL_QUESTIONS}`;
+  }
+
+  function showQuestion() {
+    if (currentExplicacionAbort) {
+      currentExplicacionAbort.abort();
+      currentExplicacionAbort = null;
+    }
+    answered = false;
+    btnNext.style.display = 'none';
+    feedback.className = 'feedback';
+    feedback.textContent = '';
+    document.getElementById('explicacionBox').classList.remove('active');
+    document.getElementById('explicacionText').textContent = '';
+    document.getElementById('explicacionError').classList.remove('active');
+    questionArea.classList.remove('hidden');
+
+    const u = UNITS[currentUnit];
+    const q = u.questions[currentQ];
+    questionText.textContent = q.question;
+
+    optionsContainer.innerHTML = '';
+    q.options.forEach((opt, idx) => {
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.textContent = opt;
+      div.dataset.index = idx;
+      div.addEventListener('click', () => selectOption(idx));
+      optionsContainer.appendChild(div);
+    });
+
+    updateCounter();
+    updateProgress();
+
+    requestAnimationFrame(() => {
+      questionArea.classList.remove('fade-out', 'fade-in');
+      void questionArea.offsetWidth;
+      questionArea.classList.add('fade-in');
+    });
+  }
+
+  function selectOption(idx) {
+    if (answered) return;
+    answered = true;
+
+    const u = UNITS[currentUnit];
+    const q = u.questions[currentQ];
+    const options = optionsContainer.querySelectorAll('.option');
+    options.forEach(opt => opt.classList.add('disabled'));
+
+    const isCorrect = idx === q.correct;
+    if (isCorrect) {
+      score++;
+      unitScores[currentUnit]++;
+      options[idx].classList.add('correct');
+      feedback.className = 'feedback correct';
+      feedback.textContent = '¡Correcto!';
+    } else {
+      preguntasIncorrectas.push({
+        pregunta: q.question,
+        elegida: q.options[idx],
+        correcta: q.options[q.correct],
+      });
+      options[idx].classList.add('incorrect');
+      options[q.correct].classList.add('reveal-correct');
+      feedback.className = 'feedback incorrect';
+      feedback.textContent = `Incorrecto. La respuesta correcta era: ${q.options[q.correct]}`;
+      pedirExplicacion(q.question, q.options[idx], q.options[q.correct]);
+    }
+
+    totalAnswered++;
+    updateProgress();
+    updateCounter();
+    btnNext.style.display = 'block';
+  }
+
+  function goToNext() {
+    if (currentExplicacionAbort) {
+      currentExplicacionAbort.abort();
+      currentExplicacionAbort = null;
+    }
+    questionArea.classList.add('fade-out');
+    setTimeout(() => {
+      currentQ++;
+      const u = UNITS[currentUnit];
+      if (currentQ >= u.questions.length) {
+        currentQ = 0;
+        currentUnit++;
+        if (currentUnit >= UNITS.length) {
+          showFinalScreen();
+          return;
+        }
+        questionArea.classList.add('hidden');
+        showUnitBanner();
+        return;
+      }
+      showQuestion();
+    }, 200);
+  }
+
+  function showFinalScreen() {
+    questionArea.classList.add('hidden');
+    unitBanner.classList.add('hidden');
+    finalScreen.classList.add('active');
+    updateProgress();
+
+    const btnFeedback = document.getElementById('btnFeedback');
+    btnFeedback.style.display = preguntasIncorrectas.length > 0 ? 'block' : 'none';
+
+    const pct = Math.round((score / TOTAL_QUESTIONS) * 100);
+
+    finalScore.textContent = `${score} / ${TOTAL_QUESTIONS}`;
+    finalPercent.textContent = `${pct}% correcto`;
+
+    unitBreakdown.innerHTML = '';
+    UNITS.forEach((u, i) => {
+      const row = document.createElement('div');
+      row.className = 'unit-row';
+      row.style.background = u.bg;
+      row.style.border = `1px solid ${u.color}`;
+      row.innerHTML = `
+        <span class="unit-label" style="color:${u.color};">${u.icon} U${i + 1}</span>
+        <span class="unit-score" style="color:${u.color};">${unitScores[i]}/${u.questions.length}</span>
+      `;
+      unitBreakdown.appendChild(row);
+    });
+
+    if (pct === 100) {
+      finalMessage.className = 'final-message excellent';
+      finalMessage.textContent = '¡Perfecto! Dominás todos los temas por completo.';
+    } else if (pct >= 70) {
+      finalMessage.className = 'final-message good';
+      finalMessage.textContent = '¡Muy bien! Tenés un sólido conocimiento en general.';
+    } else if (pct >= 40) {
+      finalMessage.className = 'final-message average';
+      finalMessage.textContent = 'Estás en el camino. Repasá los temas donde fallaste.';
+    } else {
+      finalMessage.className = 'final-message bad';
+      finalMessage.textContent = 'Necesitás repasar. ¡No te rindas, intentá de nuevo!';
+    }
+
+    counter.textContent = `Completado · ${score}/${TOTAL_QUESTIONS}`;
+  }
+
+  function startQuiz() {
+    currentUnit = 0;
+    currentQ = 0;
+    answered = false;
+    score = 0;
+    unitScores = [0, 0, 0];
+    totalAnswered = 0;
+    preguntasIncorrectas = [];
+    finalScreen.classList.remove('active');
+    questionArea.classList.add('hidden');
+    unitBanner.classList.remove('hidden');
+    document.getElementById('spinner').classList.remove('active');
+    document.getElementById('feedbackIaContainer').classList.remove('active');
+    document.getElementById('feedbackIaError').classList.remove('active');
+    showUnitBanner();
+  }
+
+  function typewriter(el, text, speed = 20) {
+    let i = 0;
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    el.appendChild(cursor);
+
+    function tick() {
+      if (i < text.length) {
+        cursor.before(document.createTextNode(text[i]));
+        i++;
+        setTimeout(tick, speed);
+      } else {
+        cursor.remove();
+      }
+    }
+    tick();
+  }
+
+  async function obtenerFeedback() {
+    const btn = document.getElementById('btnFeedback');
+    const spinner = document.getElementById('spinner');
+    const container = document.getElementById('feedbackIaContainer');
+    const textEl = document.getElementById('feedbackIaText');
+    const errorEl = document.getElementById('feedbackIaError');
+
+    btn.disabled = true;
+    spinner.classList.add('active');
+    container.classList.remove('active');
+    errorEl.classList.remove('active');
+    errorEl.textContent = '';
+
+    const listaIncorrectas = preguntasIncorrectas.map(p =>
+      `- "${p.pregunta}": eligió "${p.elegida}", correcta era "${p.correcta}"`
+    ).join('\n');
+
+    const prompt = `Sos un profesor de programación. Un estudiante completó un examen de "Prácticas Profesionalizantes II - Programador Junior" con estos resultados:
+
+Puntaje total: ${score}/${TOTAL_QUESTIONS}
+- Unidad 1 (Entorno del Programador + HTML/CSS): ${unitScores[0]}/${UNITS[0].questions.length}
+- Unidad 2 (CSS Avanzado, JavaScript ES6+ y Servidor Web): ${unitScores[1]}/${UNITS[1].questions.length}
+- Unidad 3 (React.js y Frontend Profesional): ${unitScores[2]}/${UNITS[2].questions.length}
+
+Preguntas incorrectas:
+${listaIncorrectas}
+
+Dales un feedback personalizado y motivador en español. Indicá en qué unidades debe reforzar, qué temas específicos repasar y terminá con un mensaje de aliento. Sé concreto y breve (máximo 200 palabras).`;
+
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || `Error ${res.status}`);
+      }
+
+      spinner.classList.remove('active');
+      container.classList.add('active');
+      typewriter(textEl, data.reply);
+    } catch (err) {
+      spinner.classList.remove('active');
+      errorEl.textContent = `Error al obtener feedback: ${err.message}`;
+      errorEl.classList.add('active');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function pedirExplicacion(pregunta, elegida, correcta) {
+    if (explicacionesCache[pregunta]) {
+      mostrarExplicacion(explicacionesCache[pregunta]);
+      return;
+    }
+
+    const controller = new AbortController();
+    currentExplicacionAbort = controller;
+
+    const box = document.getElementById('explicacionBox');
+    const textEl = document.getElementById('explicacionText');
+    const errorEl = document.getElementById('explicacionError');
+
+    textEl.textContent = '';
+    errorEl.classList.remove('active');
+    box.classList.add('active');
+    box.innerHTML = `
+      <div class="explicacion-title">💡 ¿Por qué estaba mal?</div>
+      <div class="explicacion-text" id="explicacionText">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="explicacion-error" id="explicacionError"></div>
+    `;
+
+    const prompt = `Sos un profesor de programación de la materia "Prácticas Profesionalizantes II - Programador Junior".
+
+Un estudiante respondió mal esta pregunta:
+
+Pregunta: "${pregunta}"
+Respuesta que eligió: "${elegida}"
+Respuesta correcta: "${correcta}"
+
+Explicá en 3-4 líneas por qué la respuesta correcta es la correcta y por qué la que eligió está mal. Usá lenguaje simple y didáctico, en español. Sin saludos ni introducción, ir directo a la explicación.`;
+
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+
+      explicacionesCache[pregunta] = data.reply;
+      mostrarExplicacion(data.reply);
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      const errEl = document.getElementById('explicacionError');
+      errEl.textContent = 'No se pudo cargar la explicación';
+      errEl.classList.add('active');
+    } finally {
+      if (currentExplicacionAbort === controller) {
+        currentExplicacionAbort = null;
+      }
+    }
+  }
+
+  function mostrarExplicacion(texto) {
+    const box = document.getElementById('explicacionBox');
+    box.innerHTML = `
+      <div class="explicacion-title">💡 ¿Por qué estaba mal?</div>
+      <div class="explicacion-text" id="explicacionText"></div>
+      <div class="explicacion-error" id="explicacionError"></div>
+    `;
+    const textEl = document.getElementById('explicacionText');
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    textEl.appendChild(cursor);
+
+    function tick() {
+      if (i < texto.length) {
+        cursor.before(document.createTextNode(texto[i]));
+        i++;
+        setTimeout(tick, 12);
+      } else {
+        cursor.remove();
+      }
+    }
+    tick();
+  }
+
+  document.getElementById('btnFeedback').addEventListener('click', obtenerFeedback);
+  btnNext.addEventListener('click', goToNext);
+  btnRestart.addEventListener('click', startQuiz);
+
+  startQuiz();
+</script>
+</body>
+</html>
