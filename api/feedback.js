@@ -63,4 +63,4 @@ export default async function handler(req, res) {
       detalle: err.message
     });
   }
-}
+} 
