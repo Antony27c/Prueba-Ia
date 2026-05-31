@@ -1,4 +1,8 @@
 export default async function handler(req, res) {
+  console.log("Body recibido:", JSON.stringify(req.body));
+  console.log("API Key existe:", !!process.env.GROQ_API_KEY);
+  console.log("API Key primeros 8 chars:", process.env.GROQ_API_KEY?.substring(0, 8));
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -52,7 +56,11 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ reply });
   } catch (err) {
-    console.error('Error en handler:', err);
-    return res.status(500).json({ error: 'Error interno del servidor', detail: err.message });
+    console.error("Error detallado:", err.message);
+    console.error("Stack:", err.stack);
+    return res.status(500).json({
+      error: "Error interno",
+      detalle: err.message
+    });
   }
 }
