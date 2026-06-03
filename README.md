@@ -64,7 +64,7 @@ El examen PP tiene **4 niveles de dificultad** seleccionables desde `/examen/pp/
 - **Nivel Original** — El examen original con 20 preguntas (7+9+4). Flujo secuencial por unidades con banners.
 - **Nivel Fácil** — 20 preguntas de multiple choice directas y conceptuales. Feedback IA en incorrectas.
 - **Nivel Intermedio** — 20 preguntas con 3 tipos: "¿Cuál NO es?", lectura de código, y diferencias sutiles. Feedback IA en incorrectas.
-- **Nivel Difícil** — 13 preguntas de respuesta libre. La IA evalúa cada respuesta como correcta, parcial o incorrecta. Hasta 2 reintentos por pregunta.
+- **Nivel Difícil** — 13 preguntas de respuesta libre. La IA evalúa cada respuesta como correcta, parcial o incorrecta. Hasta 2 reintentos por pregunta. Botón de ayuda opcional que descuenta 0.50 del puntaje final.
 
 **Unidades** (los 4 niveles cubren el mismo temario):
 - **Unidad 1** — Entorno del Programador + HTML/CSS (7 preguntas)
@@ -95,6 +95,7 @@ Navegación libre entre preguntas con botones anterior/siguiente y puntos de acc
 - Preguntas tipo "leer código" con bloque de código monoespaciado
 - Evaluación con IA para respuestas de texto libre (nivel difícil)
 - Hasta 2 reintentos por pregunta en nivel difícil
+- Botón de ayuda opcional con penalización de -0.50 por uso en nivel difícil
 
 ## Cómo correr localmente
 
