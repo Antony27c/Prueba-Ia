@@ -17,15 +17,18 @@ interface AnswerEntry {
   attempts: string[];
   result: 'CORRECTO' | 'PARCIAL' | 'INCORRECTO';
   feedback: string;
+  suggestedAnswer?: string;
   retriesLeft: number;
 }
 
-function parseAIResponse(text: string): { result: 'CORRECTO' | 'PARCIAL' | 'INCORRECTO'; feedback: string } {
+function parseAIResponse(text: string): { result: 'CORRECTO' | 'PARCIAL' | 'INCORRECTO'; feedback: string; suggestedAnswer?: string } {
   const resultMatch = text.match(/RESULTADO:\s*(CORRECTO|PARCIAL|INCORRECTO)/i);
-  const feedbackMatch = text.match(/FEEDBACK:\s*([\s\S]+)/i);
+  const feedbackMatch = text.match(/FEEDBACK:\s*([\s\S]+?)(?=\n\s*RESPUESTA_SUGERIDA:|$)/i);
+  const suggestedMatch = text.match(/RESPUESTA_SUGERIDA:\s*([\s\S]+)/i);
   return {
     result: (resultMatch?.[1]?.toUpperCase() as any) ?? 'INCORRECTO',
     feedback: feedbackMatch?.[1]?.trim() ?? 'No se pudo evaluar la respuesta.',
+    suggestedAnswer: suggestedMatch?.[1]?.trim(),
   };
 }
 
@@ -112,9 +115,12 @@ Si la respuesta tiene algo correcto pero le falta información importante. Indic
 RESULTADO: INCORRECTO
 Si la respuesta está vacía, es incorrecta, o no responde la pregunta. Explicá la respuesta correcta brevemente.
 
+Si el resultado es PARCIAL o INCORRECTO, incluí también una respuesta correcta completa que el estudiante debería haber dado.
+
 Respondé SIEMPRE en este formato exacto (sin saludos, sin preamble):
 RESULTADO: [CORRECTO|PARCIAL|INCORRECTO]
 FEEDBACK: [Una o dos oraciones concisas en español.]
+RESPUESTA_SUGERIDA: [Respondé SOLO si el resultado es PARCIAL o INCORRECTO. Una respuesta completa y correcta que el estudiante debería haber dado. Si el resultado es CORRECTO, omití esta línea.]
 
 No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
 
@@ -140,6 +146,7 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
               attempts: [...(prevAns[currentQ.id]?.attempts ?? []), answerText],
               result: parsed.result,
               feedback: parsed.feedback,
+              suggestedAnswer: parsed.suggestedAnswer,
               retriesLeft: Math.max(0, newRetriesLeft),
             },
           }));
@@ -411,6 +418,13 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
             </div>
             <div ref={feedbackRef} className="text-xs leading-relaxed text-[#c9d1d9] whitespace-pre-wrap" />
           </div>
+
+          {currentAnswer.result !== 'CORRECTO' && currentAnswer.suggestedAnswer && (
+            <div className="mt-3 p-4 rounded-xl bg-[#161b22] border border-[#3fb950]" style={{ animation: 'slideUp 0.35s ease' }}>
+              <div className="text-xs font-bold text-[#3fb950] mb-2">✅ Respuesta correcta sugerida</div>
+              <div className="text-xs leading-relaxed text-[#c9d1d9] whitespace-pre-wrap">{currentAnswer.suggestedAnswer}</div>
+            </div>
+          )}
 
           {/* Retry or Next buttons */}
           <div className="flex gap-3 mt-4">
