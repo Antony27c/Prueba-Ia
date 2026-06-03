@@ -23,10 +23,18 @@ Aplicación web de simulación de exámenes multiple choice para las materias **
 │   ├── globals.css           → Tailwind + estilos personalizados
 │   ├── api/feedback/route.ts → POST /api/feedback (proxy a Groq)
 │   └── examen/
-│       ├── pp/page.tsx       → Examen PP (20 preguntas, 3 unidades)
+│       ├── pp/
+│       │   ├── page.tsx      → Examen PP original (20 preg., 3 unidades)
+│       │   ├── niveles/page.tsx → Selector de dificultad (4 niveles)
+│       │   ├── facil/page.tsx → Nivel fácil — multiple choice directo
+│       │   ├── intermedio/page.tsx → Nivel intermedio — trampa, código, sutilezas
+│       │   └── dificil/page.tsx → Nivel difícil — respuesta libre con IA
 │       └── bd/page.tsx       → Examen BD (22 preguntas, 3 temas)
 ├── data/
-│   └── questions-bd.ts       → Preguntas de Bases de Datos
+│   ├── questions-bd.ts        → Preguntas de Bases de Datos
+│   ├── questions-pp-facil.ts  → 20 preguntas nivel fácil
+│   ├── questions-pp-intermedio.ts → 20 preguntas nivel intermedio
+│   └── questions-pp-dificil.ts   → 13 preguntas nivel difícil
 ├── next.config.js
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -39,19 +47,29 @@ Aplicación web de simulación de exámenes multiple choice para las materias **
 | Ruta | Descripción |
 |------|-------------|
 | `/` | Menú principal para seleccionar examen |
-| `/examen/pp` | Examen de Prácticas Profesionalizantes |
+| `/examen/pp` | Examen PP original |
+| `/examen/pp/niveles` | Selector de dificultad (4 niveles) |
+| `/examen/pp/facil` | Nivel fácil — múltiple choice directo |
+| `/examen/pp/intermedio` | Nivel intermedio — preguntas con trampa |
+| `/examen/pp/dificil` | Nivel difícil — respuesta libre evaluada por IA |
 | `/examen/bd` | Simulador de Bases de Datos |
 | `/api/feedback` | API endpoint para feedback con IA |
 
 ## Exámenes
 
-### Prácticas Profesionalizantes (20 preguntas)
+### Prácticas Profesionalizantes
 
+El examen PP tiene **4 niveles de dificultad** seleccionables desde `/examen/pp/niveles`:
+
+- **Nivel Original** — El examen original con 20 preguntas (7+9+4). Flujo secuencial por unidades con banners.
+- **Nivel Fácil** — 20 preguntas de multiple choice directas y conceptuales. Feedback IA en incorrectas.
+- **Nivel Intermedio** — 20 preguntas con 3 tipos: "¿Cuál NO es?", lectura de código, y diferencias sutiles. Feedback IA en incorrectas.
+- **Nivel Difícil** — 13 preguntas de respuesta libre. La IA evalúa cada respuesta como correcta, parcial o incorrecta. Hasta 2 reintentos por pregunta.
+
+**Unidades** (los 4 niveles cubren el mismo temario):
 - **Unidad 1** — Entorno del Programador + HTML/CSS (7 preguntas)
 - **Unidad 2** — CSS Avanzado, JavaScript ES6+ y Servidor Web (9 preguntas)
 - **Unidad 3** — React.js y Frontend Profesional (4 preguntas)
-
-Flujo secuencial por unidades con banners de presentación. Al finalizar, muestra resultado por unidad y permite obtener feedback general con IA.
 
 ### Bases de Datos (22 preguntas)
 
@@ -73,6 +91,10 @@ Navegación libre entre preguntas con botones anterior/siguiente y puntos de acc
 - Pantalla de resultados con desglose por unidad/tema
 - Diseño responsive y dark theme
 - `AbortController` para cancelar peticiones al navegar
+- Selector de dificultad con 4 niveles (Original / Fácil / Intermedio / Difícil)
+- Preguntas tipo "leer código" con bloque de código monoespaciado
+- Evaluación con IA para respuestas de texto libre (nivel difícil)
+- Hasta 2 reintentos por pregunta en nivel difícil
 
 ## Cómo correr localmente
 
