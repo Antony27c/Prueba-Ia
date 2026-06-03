@@ -18,6 +18,7 @@ interface AnswerEntry {
   result: 'CORRECTO' | 'PARCIAL' | 'INCORRECTO';
   feedback: string;
   suggestedAnswer?: string;
+  helpUsed: boolean;
   retriesLeft: number;
 }
 
@@ -147,6 +148,7 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
               result: parsed.result,
               feedback: parsed.feedback,
               suggestedAnswer: parsed.suggestedAnswer,
+              helpUsed: false,
               retriesLeft: Math.max(0, newRetriesLeft),
             },
           }));
@@ -167,6 +169,7 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
               attempts: [...(prevAns[currentQ.id]?.attempts ?? []), answerText],
               result: 'INCORRECTO',
               feedback: 'Error al evaluar la respuesta. Por favor intentá de nuevo.',
+              helpUsed: false,
               retriesLeft: Math.max(0, (prevAns[currentQ.id]?.retriesLeft ?? 2) - 1),
             },
           }));
@@ -216,6 +219,16 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
     setInputValue('');
   }, []);
 
+  const handleAyuda = useCallback(() => {
+    setAnswers((prevAns) => ({
+      ...prevAns,
+      [currentQ.id]: {
+        ...prevAns[currentQ.id],
+        helpUsed: true,
+      },
+    }));
+  }, [currentQ.id]);
+
   const resetExam = useCallback(() => {
     if (abortRef.current) {
       abortRef.current.abort();
@@ -252,17 +265,21 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
       return acc + (ans ? ans.attempts.length : 0);
     }, 0);
 
+    const helpCount = ALL_QUESTIONS.filter((q) => answers[q.id]?.helpUsed).length;
+    const effectiveScore = Math.max(0, correctCount - helpCount * 0.5);
     const pct = Math.round((correctCount / TOTAL) * 100);
+    const effectivePct = Math.round((effectiveScore / TOTAL) * 100);
 
+    const msgPct = Math.round((effectiveScore / TOTAL) * 100);
     let finalMsgClass = '';
     let finalMsgText = '';
-    if (pct === 100) {
+    if (msgPct >= 100) {
       finalMsgClass = 'bg-[#1b3624] text-[#7ee787] border border-[#3fb950]';
       finalMsgText = '¡Perfecto! Respondiste todo correctamente.';
-    } else if (pct >= 70) {
+    } else if (msgPct >= 70) {
       finalMsgClass = 'bg-[#1c2a41] text-[#79c0ff] border border-[#58a6ff]';
       finalMsgText = '¡Muy bien! Demostrás un sólido conocimiento.';
-    } else if (pct >= 40) {
+    } else if (msgPct >= 40) {
       finalMsgClass = 'bg-[#3d2e1e] text-[#d29922] border border-[#bb8009]';
       finalMsgText = 'Estás en el camino. Repasá los temas donde tuviste dificultades.';
     } else {
@@ -282,7 +299,12 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
           <div className="text-5xl font-extrabold mb-1 bg-gradient-to-r from-[#d29922] to-[#e3b341] bg-clip-text text-transparent">
             {correctCount} / {TOTAL}
           </div>
-          <div className="text-[#8b949e] mb-4">{pct}% correcto</div>
+          <div className="text-[#8b949e] mb-1">{pct}% correcto</div>
+          {helpCount > 0 && (
+            <div className="text-xs text-[#d29922] mb-4">
+              Puntaje efectivo: {effectiveScore.toFixed(1)} / {TOTAL} ({effectivePct}%) — {helpCount} ayuda{helpCount > 1 ? 's' : ''} usada{helpCount > 1 ? 's' : ''} (-0.50 c/u)
+            </div>
+          )}
 
           <div className="flex justify-center gap-4 mb-4 text-sm">
             <div className="text-center">
@@ -419,7 +441,15 @@ No uses markdown, no uses asteriscos, no saludes. Solo el formato indicado.`;
             <div ref={feedbackRef} className="text-xs leading-relaxed text-[#c9d1d9] whitespace-pre-wrap" />
           </div>
 
-          {currentAnswer.result !== 'CORRECTO' && currentAnswer.suggestedAnswer && (
+          {currentAnswer.result !== 'CORRECTO' && currentAnswer.suggestedAnswer && !currentAnswer.helpUsed && (
+            <button onClick={handleAyuda}
+              className="mt-3 w-full py-2.5 rounded-xl font-semibold text-sm transition-all border-2 border-dashed hover:bg-[rgba(210,153,34,0.1)]"
+              style={{ borderColor: '#d29922', color: '#d29922' }}>
+              💡 Mostrar ayuda (-0.50)
+            </button>
+          )}
+
+          {currentAnswer.helpUsed && currentAnswer.suggestedAnswer && (
             <div className="mt-3 p-4 rounded-xl bg-[#161b22] border border-[#3fb950]" style={{ animation: 'slideUp 0.35s ease' }}>
               <div className="text-xs font-bold text-[#3fb950] mb-2">✅ Respuesta correcta sugerida</div>
               <div className="text-xs leading-relaxed text-[#c9d1d9] whitespace-pre-wrap">{currentAnswer.suggestedAnswer}</div>
