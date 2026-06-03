@@ -24,6 +24,16 @@ const levels = [
     icon: '🌱',
   },
   {
+    title: 'Nivel Intermedio',
+    description: 'Múltiple choice con opciones engañosas, código para leer y diferencias sutiles entre conceptos.',
+    aiInfo: 'La IA explica por qué tu respuesta fue incorrecta cuando te equivocás.',
+    href: '/examen/pp/intermedio',
+    color: '#f0883e',
+    bg: '#3d2e1e',
+    gradient: 'linear-gradient(135deg, #f0883e, #e3b341)',
+    icon: '⚡',
+  },
+  {
     title: 'Nivel Difícil',
     description: 'Respondé con tus propias palabras. La IA evalúa tu respuesta y te dice si es correcta, parcial o incorrecta.',
     aiInfo: 'La IA evalúa cada respuesta y te permite reintentar hasta 2 veces por pregunta.',
