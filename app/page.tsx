@@ -39,7 +39,7 @@ export default function HomePage() {
         {exams.map((exam) => (
           <Link
             key={exam.id}
-            href={`/examen/${exam.id}`}
+            href={exam.id === 'pp' ? `/examen/${exam.id}/niveles` : `/examen/${exam.id}`}
             className="block p-6 rounded-xl border-2 border-transparent transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
             style={{
               background: exam.bg,
