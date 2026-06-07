@@ -21,6 +21,15 @@ const modes = [
     bg: '#2d2416',
     gradient: 'linear-gradient(135deg, #d29922, #e3b341)',
   },
+  {
+    title: 'Temario — Simulacro',
+    description: '18 preguntas oficiales del profe · Teoría + práctica por unidad',
+    icon: '📋',
+    href: '/examen/prog2/simulacro',
+    color: '#a371f7',
+    bg: '#1c1335',
+    gradient: 'linear-gradient(135deg, #a371f7, #d29922)',
+  },
 ];
 
 export default function Prog2Page() {
