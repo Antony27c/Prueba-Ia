@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { TEMAS } from '@/data/prog2/temas';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 type UnidadKey = 'Unidad 0 — Nivelación Python' | 'Unidad 1 — Estructuras Dinámicas Lineales' | 'Unidad 2 — Recursividad' | 'Unidad 3 — Archivos' | 'Unidad 4 — Árboles y Grafos';
 
@@ -269,11 +271,24 @@ export default function Prog2TeoricoPage() {
       </div>
 
       {/* Código de ejemplo */}
-      <div className="mb-4 p-4 rounded-xl bg-[#0d1117] border border-[#30363d]">
-        <div className="text-xs text-[#8b949e] mb-2">💻 EJEMPLO:</div>
-        <pre className="text-sm text-[#c9d1d9] font-mono whitespace-pre overflow-x-auto">
+      <div className="mb-4 rounded-xl overflow-hidden border border-[#30363d]">
+        <div className="text-xs text-[#8b949e] px-4 pt-3 pb-1">💻 EJEMPLO:</div>
+        <SyntaxHighlighter
+          language="python"
+          style={vscDarkPlus}
+          customStyle={{
+            borderRadius: '8px',
+            fontSize: '14px',
+            padding: '16px',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            margin: 0,
+          }}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
           {temaActual.codigo}
-        </pre>
+        </SyntaxHighlighter>
       </div>
 
       {/* Pregunta */}

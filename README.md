@@ -1,6 +1,8 @@
 # Examen Multiple Choice
 
-Aplicación web de simulación de exámenes multiple choice para las materias **Prácticas Profesionalizantes II** y **Bases de Datos**. Construida con Next.js 14 y desplegada en Vercel.
+Aplicación web de simulación de exámenes multiple choice para las materias **Prácticas Profesionalizantes II**, **Bases de Datos** y **Programación II**. Construida con Next.js 14 y desplegada en Vercel.
+
+**🌐 Deploy:** [https://prueba-ia-smoky.vercel.app/](https://prueba-ia-smoky.vercel.app/)
 
 ## Stack
 
@@ -18,10 +20,14 @@ Aplicación web de simulación de exámenes multiple choice para las materias **
 ```
 /
 ├── app/
-│   ├── page.tsx              → Menú principal (/) — elegís PP o BD
+│   ├── page.tsx              → Menú principal (/) — elegís PP, BD o Prog II
 │   ├── layout.tsx            → Layout raíz con wrapper dark
 │   ├── globals.css           → Tailwind + estilos personalizados
-│   ├── api/feedback/route.ts → POST /api/feedback (proxy a Groq)
+│   ├── api/
+│   │   ├── feedback/route.ts → POST /api/feedback (proxy a Groq)
+│   │   └── prog2/
+│   │       ├── teorico/route.ts → POST /api/prog2/teorico (evalúa opciones)
+│   │       └── practico/route.ts → POST /api/prog2/practico (evalúa código)
 │   └── examen/
 │       ├── pp/
 │       │   ├── page.tsx      → Examen PP original (20 preg., 3 unidades)
@@ -29,12 +35,19 @@ Aplicación web de simulación de exámenes multiple choice para las materias **
 │       │   ├── facil/page.tsx → Nivel fácil — multiple choice directo
 │       │   ├── intermedio/page.tsx → Nivel intermedio — trampa, código, sutilezas
 │       │   └── dificil/page.tsx → Nivel difícil — respuesta libre con IA
-│       └── bd/page.tsx       → Examen BD (22 preguntas, 3 temas)
+│       ├── bd/page.tsx       → Examen BD (22 preguntas, 3 temas)
+│       └── prog2/
+│           ├── page.tsx      → Menú Prog II (teórico / práctico)
+│           ├── teorico/page.tsx → 28 temas con teoría, ejemplos y preguntas
+│           └── practico/page.tsx → 24 ejercicios + integrador, evaluados por IA
 ├── data/
 │   ├── questions-bd.ts        → Preguntas de Bases de Datos
 │   ├── questions-pp-facil.ts  → 20 preguntas nivel fácil
 │   ├── questions-pp-intermedio.ts → 20 preguntas nivel intermedio
-│   └── questions-pp-dificil.ts   → 13 preguntas nivel difícil
+│   ├── questions-pp-dificil.ts   → 13 preguntas nivel difícil
+│   └── prog2/
+│       ├── temas.ts           → 28 temas con teoría, código y preguntas
+│       └── ejercicios.ts      → 24 ejercicios + 27 integrador
 ├── next.config.js
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -53,7 +66,12 @@ Aplicación web de simulación de exámenes multiple choice para las materias **
 | `/examen/pp/intermedio` | Nivel intermedio — preguntas con trampa |
 | `/examen/pp/dificil` | Nivel difícil — respuesta libre evaluada por IA |
 | `/examen/bd` | Simulador de Bases de Datos |
+| `/examen/prog2` | Menú Programación II (teórico / práctico) |
+| `/examen/prog2/teorico` | 28 temas con teoría, ejemplos y preguntas |
+| `/examen/prog2/practico` | Ejercicios prácticos evaluados por IA |
 | `/api/feedback` | API endpoint para feedback con IA |
+| `/api/prog2/teorico` | API endpoint para evaluar respuestas múltiple choice |
+| `/api/prog2/practico` | API endpoint para evaluar código Python |
 
 ## Exámenes
 
@@ -79,6 +97,14 @@ El examen PP tiene **4 niveles de dificultad** seleccionables desde `/examen/pp/
 
 Navegación libre entre preguntas con botones anterior/siguiente y puntos de acceso rápido. Feedback visual inmediato al responder y explicaciones generadas por IA en respuestas incorrectas.
 
+### Programación II
+
+Módulo completo con dos modos de estudio:
+
+- **Modo Teórico** — 28 temas organizados en 5 unidades (Nivelación Python, Estructuras Dinámicas Lineales, Recursividad, Archivos, Árboles y Grafos). Cada tema incluye explicación teórica, ejemplo de código con comentarios, y una pregunta múltiple choice con feedback de IA.
+- **Modo Práctico** — 24 ejercicios distribuidos en 8 TP (3 dificultades cada uno). El estudiante escribe código Python y recibe evaluación automática de Groq con puntaje, errores y sugerencias.
+- **Examen Integrador** — 27 ejercicios (9 temas × 3 dificultades) dentro del modo práctico. Flujo completo: selección de dificultad → panel de 9 puntos → resolución individual → resumen final con puntaje promedio.
+
 ## Funcionalidades
 
 - Feedback visual inmediato (verde = correcto, rojo = incorrecto)
@@ -96,6 +122,10 @@ Navegación libre entre preguntas con botones anterior/siguiente y puntos de acc
 - Evaluación con IA para respuestas de texto libre (nivel difícil)
 - Hasta 2 reintentos por pregunta en nivel difícil
 - Botón de ayuda opcional con penalización de -0.50 por uso en nivel difícil
+- Módulo Programación II con modo teórico (28 temas) y práctico (24 ejercicios + integrador)
+- Sintaxis resaltada con `react-syntax-highlighter` en ejemplos de código
+- Evaluación de código Python con Groq (criterios de sintaxis, lógica y completitud)
+- Examen Integrador con 9 puntos navegables, resumen final y puntaje promedio
 
 ## Cómo correr localmente
 
