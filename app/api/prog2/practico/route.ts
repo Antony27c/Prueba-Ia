@@ -12,6 +12,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (codigo_estudiante.trim().length < 10) {
+      return NextResponse.json({
+        estado: 'incorrecto',
+        que_estuvo_bien: 'Nada por evaluar.',
+        errores: ['No se ingresó código válido para evaluar.'],
+        como_mejorar: 'Escribí tu solución en Python antes de enviar.',
+        puntaje: 0,
+      });
+    }
+
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: 'GROQ_API_KEY no configurada' }, { status: 500 });

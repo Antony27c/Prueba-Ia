@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { EJERCICIOS } from '@/data/prog2/ejercicios';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FeedbackResult {
   estado: 'correcto' | 'parcial' | 'incorrecto';
@@ -309,11 +311,24 @@ export default function Prog2PracticoPage() {
       )}
 
       {mostrarSolucion && (
-        <div className="p-3 rounded-xl bg-[#0d1117] border border-[#30363d]">
-          <div className="text-xs text-[#8b949e] mb-1">📖 Solución de referencia:</div>
-          <pre className="text-sm text-[#c9d1d9] font-mono whitespace-pre overflow-x-auto">
-            {integrEjercicio?.solucion || ejercicio?.solucion}
-          </pre>
+        <div className="rounded-xl overflow-hidden border border-[#30363d]">
+          <div className="text-xs text-[#8b949e] px-4 pt-3 pb-1">📖 Solución de referencia:</div>
+          <SyntaxHighlighter
+            language="python"
+            style={vscDarkPlus}
+            customStyle={{
+              borderRadius: '8px',
+              fontSize: '14px',
+              padding: '16px',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              margin: 0,
+            }}
+            wrapLines={true}
+            wrapLongLines={true}
+          >
+            {(integrEjercicio!.solucion || ejercicio!.solucion || '')}
+          </SyntaxHighlighter>
         </div>
       )}
 
