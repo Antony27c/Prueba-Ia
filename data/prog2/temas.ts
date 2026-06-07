@@ -110,12 +110,12 @@ edad = 17
 mensaje = "Mayor" if edad >= 18 else "Menor"  # es como un if compacto`,
     pregunta: '¿Qué retorna la expresión (10 // 3) + (10 % 3)?',
     opciones: {
-      A: '4',
+      A: '10',
       B: '3.33',
-      C: '10',
+      C: '4',
       D: '3',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       '10 // 3 da 3 (división entera) y 10 % 3 da 1 (resto). 3 + 1 = 4.',
     explicacion_incorrecta:
@@ -147,12 +147,12 @@ for clave, valor in edades.items():  # items() da pares (clave, valor)
     print(f"{clave}: {valor}")`,
     pregunta: '¿Cuál es la salida del siguiente código?\n\nfor i in range(3):\n    print(i, end=" ")',
     opciones: {
-      A: '0 1 2',
+      A: '1 2',
       B: '1 2 3',
       C: '0 1 2 3',
-      D: '1 2',
+      D: '0 1 2',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'range(3) genera los números 0, 1 y 2. El parámetro end=" " hace que se impriman en la misma línea separados por espacio.',
     explicacion_incorrecta:
@@ -224,12 +224,12 @@ print(p)                 # usa __str__: "Ana (25 años)"
 print(p.saludar())       # llama al método saludar() de la instancia`,
     pregunta: '¿Qué imprime print(p) si p = Persona("Luis", 30)?',
     opciones: {
-      A: 'Luis (30 años)',
-      B: '<__main__.Persona object at 0x...>',
+      A: '<__main__.Persona object at 0x...>',
+      B: 'Luis (30 años)',
       C: '{"nombre": "Luis", "edad": 30}',
       D: 'Error porque falta implementar __str__',
     },
-    correcta: 'A',
+        correcta: 'B',
     explicacion_correcta:
       'El método __str__ está definido y retorna un string formateado. print() usa __str__ automáticamente.',
     explicacion_incorrecta:
@@ -266,12 +266,12 @@ for a in animales:
     print(f"{a.nombre} dice {a.hacer_sonido()}")`,
     pregunta: '¿Qué imprime el bucle for del código anterior?',
     opciones: {
-      A: 'Rex dice Guau\nMisu dice Miau',
+      A: 'Rex dice None\nMisu dice None',
       B: 'Rex dice Miau\nMisu dice Guau',
-      C: 'Rex dice None\nMisu dice None',
+      C: 'Rex dice Guau\nMisu dice Miau',
       D: 'Error porque Animal no tiene implementación en hacer_sonido',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'Cada clase hija sobrescribe hacer_sonido() con su propia implementación. Perro retorna "Guau" y Gato retorna "Miau".',
     explicacion_incorrecta:
@@ -351,12 +351,12 @@ while actual:            # mientras actual no sea None
 # Resultado: 10 -> 20 -> 30 -> None`,
     pregunta: '¿Qué contiene nodo1.siguiente.siguiente.dato después de enlazar nodo1 -> nodo2 -> nodo3?',
     opciones: {
-      A: '30',
+      A: 'Error porque no se puede encadenar .siguiente',
       B: '20',
       C: 'None',
-      D: 'Error porque no se puede encadenar .siguiente',
+      D: '30',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'nodo1.siguiente es nodo2, y nodo2.siguiente es nodo3. Por tanto, nodo3.dato es 30.',
     explicacion_incorrecta:
@@ -438,12 +438,12 @@ class ListaCircular:
             nuevo.siguiente = self.cabeza  # el nuevo apunta a la cabeza`,
     pregunta: '¿Cuándo termina el while al insertar en una lista circular?',
     opciones: {
-      A: 'Cuando actual.siguiente es igual a self.cabeza',
+      A: 'Cuando actual es None',
       B: 'Cuando actual.siguiente es None',
-      C: 'Cuando actual es None',
+      C: 'Cuando actual.siguiente es igual a self.cabeza',
       D: 'El while nunca termina porque es circular',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'En una lista circular, el último nodo apunta a la cabeza. El while itera hasta encontrar el nodo cuyo siguiente sea la cabeza.',
     explicacion_incorrecta:
@@ -488,12 +488,12 @@ print(p.pop())    # desapilar: sale el 20 (LIFO: el último en entrar)
 print(p.peek())   # mirar el tope: ahora es 10 (sin quitarlo)`,
     pregunta: '¿Qué imprime el código de uso de la pila?',
     opciones: {
-      A: '20\n10',
+      A: 'Error porque la pila está vacía',
       B: '10\n20',
       C: '10\n10',
-      D: 'Error porque la pila está vacía',
+      D: '20\n10',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'pop() retorna el último elemento agregado (20, LIFO). Luego peek() muestra el tope actual (10) sin quitarlo.',
     explicacion_incorrecta:
@@ -578,12 +578,12 @@ contar(3)
 # ¡Fin!`,
     pregunta: '¿Qué ocurre si una función recursiva no tiene caso base?',
     opciones: {
-      A: 'Se ejecuta infinitamente hasta llenar la pila de llamadas',
-      B: 'La función retorna None automáticamente',
+      A: 'La función retorna None automáticamente',
+      B: 'Se ejecuta infinitamente hasta llenar la pila de llamadas',
       C: 'Python ignora la recursión y ejecuta solo el caso recursivo una vez',
       D: 'El programa no compila porque falta el caso base',
     },
-    correcta: 'A',
+        correcta: 'B',
     explicacion_correcta:
       'Sin caso base, la recursión nunca termina. Cada llamada consume memoria en la pila hasta que ocurre un desbordamiento (StackOverflow).',
     explicacion_incorrecta:
@@ -615,12 +615,12 @@ def fibonacci(n):
 print(fibonacci(6))  # 0, 1, 1, 2, 3, 5, 8 → el 6to término (0-index) es 8`,
     pregunta: '¿Cuántas llamadas recursivas hace fibonacci(4)?',
     opciones: {
-      A: '8',
+      A: '2',
       B: '4',
-      C: '2',
+      C: '8',
       D: '1',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'fib(4) llama a fib(3) y fib(2). fib(3) llama a fib(2) y fib(1), etc. En total se hacen 8 llamadas (contando la inicial).',
     explicacion_incorrecta:
@@ -662,12 +662,12 @@ def busqueda_binaria(arr, objetivo, izquierda, derecha):
     return busqueda_binaria(arr, objetivo, izquierda, medio-1)  # mitad izquierda`,
     pregunta: '¿Cuántos movimientos se requieren para resolver Torres de Hanoi con 3 discos?',
     opciones: {
-      A: '7',
+      A: '6',
       B: '3',
       C: '8',
-      D: '6',
+      D: '7',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'La fórmula es 2^n - 1. Para 3 discos: 2^3 - 1 = 7 movimientos.',
     explicacion_incorrecta:
@@ -755,12 +755,12 @@ def permutar(elegidos, restantes):
 permutar([], [1, 2, 3])  # genera: [1,2,3], [1,3,2], [2,1,3], ...`,
     pregunta: '¿Por qué fibonacci_memo(50) es mucho más rápido que fibonacci(50) sin memoización?',
     opciones: {
-      A: 'Porque memo guarda resultados para no recalcular los mismos subproblemas',
-      B: 'Porque memo evita la recursión y usa un bucle for',
+      A: 'Porque memo evita la recursión y usa un bucle for',
+      B: 'Porque memo guarda resultados para no recalcular los mismos subproblemas',
       C: 'Porque memo reduce el caso base de 2 a 1',
       D: 'Porque memo elimina la necesidad de la pila de llamadas',
     },
-    correcta: 'A',
+        correcta: 'B',
     explicacion_correcta:
       'La memoización almacena resultados intermedios en un diccionario. Cada subproblema se calcula una sola vez, reduciendo la complejidad de exponencial a lineal.',
     explicacion_incorrecta:
@@ -795,12 +795,12 @@ with open("temp.txt", "w+") as f:
     print(f.read())         # read() lee todo el contenido: "Hola"`,
     pregunta: '¿Qué hace el modo "w" al abrir un archivo que ya existe?',
     opciones: {
-      A: 'Borra el contenido existente y abre para escritura',
+      A: 'Lanza un error porque el archivo ya existe',
       B: 'Agrega contenido al final del archivo existente',
-      C: 'Lanza un error porque el archivo ya existe',
+      C: 'Borra el contenido existente y abre para escritura',
       D: 'Abre el archivo solo para lectura',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'El modo "w" (write) trunca el archivo: borra todo el contenido existente antes de abrirlo para escritura.',
     explicacion_incorrecta:
@@ -833,12 +833,12 @@ with open("alumnos.csv", "r", encoding="utf-8") as f:
 # Luis 7.0`,
     pregunta: '¿Qué ventaja tiene DictReader sobre reader?',
     opciones: {
-      A: 'Permite acceder a las columnas por nombre en lugar de índice numérico',
+      A: 'Soporta formatos que no son CSV',
       B: 'Es más rápido que reader',
       C: 'No requiere abrir el archivo con with',
-      D: 'Soporta formatos que no son CSV',
+      D: 'Permite acceder a las columnas por nombre en lugar de índice numérico',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'DictReader usa la primera fila como claves y permite acceder a los valores por nombre de columna, haciendo el código más legible.',
     explicacion_incorrecta:
@@ -916,12 +916,12 @@ if not os.path.exists("datos"):  # si la carpeta "datos" no existe
     print("Carpeta creada")`,
     pregunta: '¿Qué hace os.path.join()?',
     opciones: {
-      A: 'Combina segmentos de ruta usando el separador correcto del sistema operativo',
-      B: 'Verifica si una ruta existe en el sistema de archivos',
+      A: 'Verifica si una ruta existe en el sistema de archivos',
+      B: 'Combina segmentos de ruta usando el separador correcto del sistema operativo',
       C: 'Crea todas las carpetas necesarias para una ruta',
       D: 'Concatena strings sin modificar los separadores',
     },
-    correcta: 'A',
+        correcta: 'B',
     explicacion_correcta:
       'os.path.join() une segmentos de ruta con el separador apropiado (\\ en Windows, / en Linux/Mac).',
     explicacion_incorrecta:
@@ -965,12 +965,12 @@ def actualizar(titulo_buscar, nuevo_estado):
                 w.writerow([t["titulo"], t["estado"]])    #  mantener igual`,
     pregunta: 'En el método actualizar(), ¿por qué se reescribe todo el archivo en lugar de modificar solo la línea?',
     opciones: {
-      A: 'Porque los archivos de texto no permiten modificar una línea sin reescribir todo',
+      A: 'Porque csv.writer no permite escritura selectiva',
       B: 'Porque es más eficiente reescribir todo el archivo',
-      C: 'Porque csv.writer no permite escritura selectiva',
+      C: 'Porque los archivos de texto no permiten modificar una línea sin reescribir todo',
       D: 'Porque el archivo debe ordenarse después de cada actualización',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'Los archivos de texto no soportan inserción o modificación en medio del archivo. Para cambiar una línea, hay que reescribir el archivo completo.',
     explicacion_incorrecta:
@@ -1007,12 +1007,12 @@ raiz.izquierdo.izquierdo = NodoArbol(4)  # Hijo izquierdo del nodo 2
 # Nodos hoja (sin hijos): el nodo 3 y el nodo 4`,
     pregunta: 'En el árbol del código, ¿cuántos nodos hoja tiene?',
     opciones: {
-      A: '2',
+      A: '4',
       B: '3',
       C: '1',
-      D: '4',
+      D: '2',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'Los nodos hoja son los que no tienen hijos: el nodo 3 (sin hijos) y el nodo 4 (sin hijos). Total: 2.',
     explicacion_incorrecta:
@@ -1068,12 +1068,12 @@ def por_niveles(raiz):
 # Niveles: 2 1 3     (nivel 1 → nivel 2)`,
     pregunta: 'Para el árbol del código, ¿qué imprime el recorrido por niveles?',
     opciones: {
-      A: '2 1 3',
-      B: '1 2 3',
+      A: '1 2 3',
+      B: '2 1 3',
       C: '1 3 2',
       D: '2 3 1',
     },
-    correcta: 'A',
+        correcta: 'B',
     explicacion_correcta:
       'El recorrido por niveles (BFS) visita los nodos nivel por nivel de izquierda a derecha. La raíz es 2 (nivel 1), luego 1 y 3 (nivel 2), por eso el resultado es 2 1 3.',
     explicacion_incorrecta:
@@ -1115,12 +1115,12 @@ class ABB:
         return _buscar(self.raiz)`,
     pregunta: '¿En qué orden deben insertarse los valores para que el ABB tenga altura mínima?',
     opciones: {
-      A: 'Insertar los valores ordenados de forma que el árbol quede balanceado, ej: mediano primero',
+      A: 'Insertar en orden decreciente siempre',
       B: 'Insertar en orden creciente siempre',
-      C: 'Insertar en orden decreciente siempre',
+      C: 'Insertar los valores ordenados de forma que el árbol quede balanceado, ej: mediano primero',
       D: 'El orden de inserción no afecta la altura del ABB',
     },
-    correcta: 'A',
+        correcta: 'C',
     explicacion_correcta:
       'Para altura mínima el árbol debe estar balanceado. Insertar el elemento mediano primero ayuda a que los subárboles izquierdo y derecho tengan tamaño similar.',
     explicacion_incorrecta:
@@ -1159,12 +1159,12 @@ grafo_pond = {
 }`,
     pregunta: '¿Cuándo conviene usar matriz de adyacencia en lugar de lista de adyacencia?',
     opciones: {
-      A: 'Cuando el grafo es denso (muchas aristas) y se necesita consultar rápido si existe una arista',
+      A: 'Cuando se necesita recorrer todos los vecinos de un vértice',
       B: 'Cuando el grafo tiene pocos vértices y muchas aristas',
       C: 'Cuando el grafo es dirigido',
-      D: 'Cuando se necesita recorrer todos los vecinos de un vértice',
+      D: 'Cuando el grafo es denso (muchas aristas) y se necesita consultar rápido si existe una arista',
     },
-    correcta: 'A',
+        correcta: 'D',
     explicacion_correcta:
       'La matriz de adyacencia permite consultar si existe una arista en O(1). Es preferible en grafos densos donde el costo de memoria es aceptable.',
     explicacion_incorrecta:
