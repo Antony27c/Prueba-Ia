@@ -23,6 +23,16 @@ const exams = [
     bg: '#1b3624',
     gradient: 'linear-gradient(135deg, #3fb950, #56d364)',
   },
+  {
+    id: 'prog2',
+    title: 'Programación II',
+    subtitle: 'Estructuras de Datos y Algoritmos',
+    icon: '🐍',
+    description: 'Python, POO, listas enlazadas, pilas, colas, recursividad, archivos, árboles y grafos',
+    color: '#bc8cff',
+    bg: '#2a1e3c',
+    gradient: 'linear-gradient(135deg, #bc8cff, #58a6ff)',
+  },
 ];
 
 export default function HomePage() {
