@@ -1,123 +1,86 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server'
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { tipo, modo, pregunta, respuesta_estudiante, respuesta_oficial, pistas_usadas, ayuda_usada } = body || {};
+    const body = await req.json()
+    const { tipo, modo, pregunta, respuesta_estudiante, respuesta_oficial, pistas_usadas, ayuda_usada } = body
 
-    if (!tipo || !modo || !pregunta || !respuesta_estudiante || !respuesta_oficial) {
-      return NextResponse.json(
-        { error: 'Los campos tipo, modo, pregunta, respuesta_estudiante y respuesta_oficial son requeridos' },
-        { status: 400 }
-      );
-    }
-
-    if (tipo !== 'teorica' && tipo !== 'practica') {
-      return NextResponse.json({ error: 'tipo debe ser "teorica" o "practica"' }, { status: 400 });
-    }
-
-    if (modo !== 'intermedio' && modo !== 'dificil') {
-      return NextResponse.json({ error: 'modo debe ser "intermedio" o "dificil"' }, { status: 400 });
-    }
-
-    if (respuesta_estudiante.trim().length < 10) {
-      return NextResponse.json({
-        estado: 'incorrecto',
-        feedback: 'No se ingresó una respuesta válida para evaluar. Escribí tu respuesta antes de enviar.',
+    if (!respuesta_estudiante || respuesta_estudiante.trim().length < 10) {
+      return Response.json({
+        estado: "incorrecto",
+        feedback: "No se ingresó una respuesta válida. Escribí tu respuesta antes de enviar.",
         conceptos_faltantes: [],
-        puntaje: 0,
-      });
+        puntaje: 0
+      })
     }
 
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'GROQ_API_KEY no configurada' }, { status: 500 });
-    }
+    const systemPrompt = tipo === "teorica"
+      ? `Sos un profesor de Programación II evaluando una respuesta teórica.
+Comparás la respuesta del estudiante con la respuesta oficial.
+Evaluá si el estudiante captó los conceptos clave, no si usó las mismas palabras.
+Una respuesta con las ideas correctas explicadas con otras palabras es correcta.
+Penalizá solo si falta algún concepto importante o hay errores graves.
+Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con esta estructura exacta:
+{"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":8}`
+      : `Sos un profesor de Python evaluando código de un estudiante.
+Evaluá si el código resuelve el problema del enunciado.
+NO penalices: estilo de comillas, ortografía en strings, nombres de variables distintos.
+SÍ penaliza: errores de lógica, sintaxis que rompe el código, no usar las estructuras pedidas.
+Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con esta estructura exacta:
+{"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":8}`
 
-    const ayudasMsg =
-      tipo === 'teorica'
-        ? `Pistas usadas: ${pistas_usadas || 0}${ayuda_usada ? '. El estudiante usó la ayuda (vió la respuesta oficial).' : ''}`
-        : `Pistas usadas: ${pistas_usadas || 0}${ayuda_usada ? '. El estudiante usó la ayuda (vió la solución).' : ''}`;
-
-    const systemPrompt = `Sos un profesor de Programación II evaluando la respuesta de un estudiante en un simulacro de examen.
-
-${tipo === 'teorica' ? `
-EVALUÁS UNA RESPUESTA TEÓRICA:
-- Verificá que el estudiante haya captado los conceptos clave
-- Una respuesta con las ideas correctas con otras palabras es correcta
-- Penalizá solo si falta algún concepto importante o hay errores conceptuales
-` : `
-EVALUÁS CÓDIGO PYTHON:
-- Verificá que el código resuelva el problema del enunciado
-- Penalizá errores de lógica o sintaxis que rompen el código
-- NO penalices estilo de comillas, ortografía en strings ni nombres de variables
-- Si usó ayuda o pistas, mencionalo brevemente
-`}
-
-NUNCA des la solución completa en el feedback aunque el estudiante lo pida.
-
-${ayudasMsg}
-
-Devolvé SOLO este JSON sin texto adicional:
-{
-  "estado": "correcto" | "parcial" | "incorrecto",
-  "feedback": "explicación clara y directa de qué estuvo bien y qué faltó",
-  "conceptos_faltantes": ["solo si es teórica"],
-  "puntaje": número entre 0 y 10
-}`;
-
-    const userMessage = `PREGUNTA:\n${pregunta}\n\nRESPUESTA DEL ESTUDIANTE:\n${respuesta_estudiante}\n\nRESPUESTA OFICIAL (solo como referencia para evaluar):\n${respuesta_oficial}`;
+    const userPrompt = tipo === "teorica"
+      ? `Pregunta: ${pregunta}\nRespuesta del estudiante: ${respuesta_estudiante}\nRespuesta oficial: ${respuesta_oficial}`
+      : `Enunciado: ${pregunta}\nCódigo del estudiante: ${respuesta_estudiante}\nSolución de referencia: ${respuesta_oficial}\nPistas usadas: ${pistas_usadas ?? 0}\nAyuda usada: ${ayuda_usada ?? false}`
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         model: 'llama-3.1-8b-instant',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: userMessage },
+          { role: 'user', content: userPrompt }
         ],
-        max_tokens: 800,
-        temperature: 0.3,
-      }),
-    });
+        max_tokens: 600,
+        temperature: 0.3
+      })
+    })
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return NextResponse.json(
-        { error: `Error de Groq API: ${response.status}`, detail: errorText },
-        { status: 500 }
-      );
-    }
+    const data = await response.json()
+    const text = data?.choices?.[0]?.message?.content ?? ''
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || '';
+    const clean = text
+      .replace(/```json/gi, '')
+      .replace(/```/g, '')
+      .trim()
 
-    let parsed;
     try {
-      parsed = JSON.parse(reply);
+      const parsed = JSON.parse(clean)
+      return Response.json({
+        estado: parsed.estado ?? 'parcial',
+        feedback: parsed.feedback ?? 'No se pudo procesar el feedback.',
+        conceptos_faltantes: parsed.conceptos_faltantes ?? [],
+        puntaje: parsed.puntaje ?? 5
+      })
     } catch {
-      return NextResponse.json({
+      return Response.json({
         estado: 'parcial',
-        feedback: reply,
+        feedback: 'No se pudo procesar la evaluación. Intentá de nuevo.',
         conceptos_faltantes: [],
-        puntaje: 5,
-      });
+        puntaje: 5
+      })
     }
 
-    return NextResponse.json({
-      estado: parsed.estado || 'parcial',
-      feedback: parsed.feedback || reply,
-      conceptos_faltantes: parsed.conceptos_faltantes || [],
-      puntaje: typeof parsed.puntaje === 'number' ? parsed.puntaje : 5,
-    });
-  } catch (err) {
-    return NextResponse.json(
-      { error: 'Error interno', detalle: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 }
-    );
+  } catch {
+    return Response.json({
+      estado: 'incorrecto',
+      feedback: 'Error interno del servidor. Intentá de nuevo.',
+      conceptos_faltantes: [],
+      puntaje: 0
+    })
   }
 }
