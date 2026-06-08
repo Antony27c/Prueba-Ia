@@ -895,6 +895,28 @@ export default function SimulacroPage() {
                     </ul>
                   </div>
                 )}
+
+                <div className="mt-3 pt-3 border-t border-[#30363d]">
+                  <div className="text-xs text-[#58a6ff] font-semibold mb-2">💡 Solución de referencia:</div>
+                  <div className="rounded-lg overflow-hidden border border-[#30363d]">
+                    <SyntaxHighlighter
+                      language="python"
+                      style={vscDarkPlus}
+                      customStyle={{
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                        padding: '14px',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                        margin: 0,
+                      }}
+                      wrapLines={true}
+                      wrapLongLines={true}
+                    >
+                      {ejercicio.solucion_codigo}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
               </div>
             )}
           </div>

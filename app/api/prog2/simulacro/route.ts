@@ -33,6 +33,9 @@ Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con es
       ? `Pregunta: ${pregunta}\nRespuesta del estudiante: ${respuesta_estudiante}\nRespuesta oficial: ${respuesta_oficial}`
       : `Enunciado: ${pregunta}\nCódigo del estudiante: ${respuesta_estudiante}\nSolución de referencia: ${respuesta_oficial}\nPistas usadas: ${pistas_usadas ?? 0}\nAyuda usada: ${ayuda_usada ?? false}`
 
+    console.log('=== API KEY EXISTS ===', !!process.env.GROQ_API_KEY)
+    console.log('=== REQUEST BODY ===', { tipo, modo, pregunta: pregunta?.slice(0,50), respuesta_estudiante: respuesta_estudiante?.slice(0,50) })
+
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -50,7 +53,9 @@ Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con es
       })
     })
 
+    console.log('=== GROQ STATUS ===', response.status)
     const data = await response.json()
+    console.log('=== GROQ DATA ===', JSON.stringify(data).slice(0, 200))
     const text = data?.choices?.[0]?.message?.content ?? ''
 
     console.log('=== GROQ RESPONSE ===')
