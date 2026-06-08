@@ -15,19 +15,36 @@ export async function POST(req: NextRequest) {
     }
 
     const systemPrompt = tipo === "teorica"
-      ? `Sos un profesor de Programación II evaluando una respuesta teórica.
+  ? `Sos un profesor de Programación II evaluando una respuesta teórica.
 Comparás la respuesta del estudiante con la respuesta oficial.
 Evaluá si el estudiante captó los conceptos clave, no si usó las mismas palabras.
 Una respuesta con las ideas correctas explicadas con otras palabras es correcta.
-Penalizá solo si falta algún concepto importante o hay errores graves.
-Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con esta estructura exacta:
+Penalizá solo si falta algún concepto importante o hay errores conceptuales graves.
+Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional:
 {"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":8}`
-      : `Sos un profesor de Python evaluando código de un estudiante.
-Evaluá si el código resuelve el problema del enunciado.
-NO penalices: estilo de comillas, ortografía en strings, nombres de variables distintos.
-SÍ penaliza: errores de lógica, sintaxis que rompe el código, no usar las estructuras pedidas.
-Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con esta estructura exacta:
-{"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":8}`
+  : `Sos un profesor de Python evaluando código de un estudiante.
+Evaluá ÚNICAMENTE si el código resuelve correctamente el problema del enunciado.
+
+NUNCA penalices por:
+- Nombres de variables distintos a la solución de referencia
+- Uso de comillas simples vs dobles
+- Ortografía dentro de strings o mensajes al usuario
+- Estilo de formato o espaciado
+- Diferencias menores de presentación que no afectan el resultado
+
+SÍ penaliza por:
+- Errores de sintaxis que rompen el código
+- Lógica incorrecta que da resultados erróneos
+- No usar las estructuras pedidas en el enunciado
+- Casos importantes no contemplados
+
+El estado debe ser:
+- "correcto": el código resuelve el problema sin errores lógicos (puntaje 8-10)
+- "parcial": resuelve parte del problema o tiene errores menores (puntaje 4-7)
+- "incorrecto": no resuelve el problema o tiene errores graves (puntaje 0-3)
+
+Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional:
+{"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":9}`
 
     const userPrompt = tipo === "teorica"
       ? `Pregunta: ${pregunta}\nRespuesta del estudiante: ${respuesta_estudiante}\nRespuesta oficial: ${respuesta_oficial}`
