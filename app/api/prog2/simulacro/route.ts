@@ -53,10 +53,18 @@ Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con es
     const data = await response.json()
     const text = data?.choices?.[0]?.message?.content ?? ''
 
+    console.log('=== GROQ RESPONSE ===')
+    console.log(text)
+    console.log('====================')
+
     const clean = text
       .replace(/```json/gi, '')
       .replace(/```/g, '')
       .trim()
+
+    console.log('=== CLEAN TEXT ===')
+    console.log(clean)
+    console.log('==================')
 
     try {
       const parsed = JSON.parse(clean)
@@ -66,10 +74,13 @@ Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional, con es
         conceptos_faltantes: parsed.conceptos_faltantes ?? [],
         puntaje: parsed.puntaje ?? 5
       })
-    } catch {
+    } catch (e) {
+      console.log('=== PARSE ERROR ===')
+      console.log(e)
+      console.log('==================')
       return Response.json({
         estado: 'parcial',
-        feedback: 'No se pudo procesar la evaluación. Intentá de nuevo.',
+        feedback: clean.length > 10 ? clean : 'No se pudo procesar la evaluación. Intentá de nuevo.',
         conceptos_faltantes: [],
         puntaje: 5
       })
