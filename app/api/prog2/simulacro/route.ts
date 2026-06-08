@@ -47,8 +47,22 @@ Devolvé SOLO un objeto JSON válido, sin backticks, sin texto adicional:
 {"estado":"correcto","feedback":"...","conceptos_faltantes":[],"puntaje":9}`
 
     const userPrompt = tipo === "teorica"
-      ? `Pregunta: ${pregunta}\nRespuesta del estudiante: ${respuesta_estudiante}\nRespuesta oficial: ${respuesta_oficial}`
-      : `Enunciado: ${pregunta}\nCódigo del estudiante: ${respuesta_estudiante}\nSolución de referencia: ${respuesta_oficial}\nPistas usadas: ${pistas_usadas ?? 0}\nAyuda usada: ${ayuda_usada ?? false}`
+  ? `Pregunta: ${pregunta}\nRespuesta del estudiante: ${respuesta_estudiante}\nRespuesta oficial: ${respuesta_oficial}`
+  : `Enunciado del problema: ${pregunta}
+
+Código del estudiante:
+${respuesta_estudiante}
+
+Analizá ESPECÍFICAMENTE el código del estudiante línea por línea:
+- Indicá qué líneas están bien y por qué
+- Indicá qué líneas tienen errores y cómo corregirlas
+- Si hay errores, mostrá cómo quedaría esa línea corregida
+- No compares con ninguna solución de referencia
+- No menciones "la solución de referencia" en ningún momento
+- Hablá siempre del código que escribió el estudiante
+
+Pistas usadas: ${pistas_usadas ?? 0}
+Ayuda usada: ${ayuda_usada ?? false}`
 
     console.log('=== API KEY EXISTS ===', !!process.env.GROQ_API_KEY)
     console.log('=== REQUEST BODY ===', { tipo, modo, pregunta: pregunta?.slice(0,50), respuesta_estudiante: respuesta_estudiante?.slice(0,50) })
